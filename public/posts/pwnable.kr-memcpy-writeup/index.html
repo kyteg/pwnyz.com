@@ -1,0 +1,575 @@
+<!DOCTYPE html>
+<html lang="en"><head><script src="/livereload.js?mindelay=10&amp;v=2&amp;port=1313&amp;path=livereload" data-no-instant defer></script>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <style>
+        :root {
+            --accent-color: #FF4D4D;
+            --font-size: 1.1rem;
+        }
+    </style>
+
+    
+    
+    
+    
+    
+    
+
+    
+    <title>pwnable.kr memcpy writeup</title>
+    <meta name="description" content="Play this challenge at pwnable.kr: https://pwnable.kr/play.php
+Instructions Are you tired of hacking?, take some rest here. Just help me out with my small …">
+    <meta name="keywords" content='pwnable.kr, ctf, pwn'>
+
+    <meta property="og:url" content="http://localhost:1313/posts/pwnable.kr-memcpy-writeup/">
+    <meta property="og:type" content="website">
+    <meta property="og:title" content="pwnable.kr memcpy writeup">
+    <meta property="og:description" content="Play this challenge at pwnable.kr: https://pwnable.kr/play.php
+Instructions Are you tired of hacking?, take some rest here. Just help me out with my small …">
+    <meta property="og:image" content="http://localhost:1313/images/avatar.jpg">
+    <meta property="og:image:secure_url" content="http://localhost:1313/images/avatar.jpg">
+
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="pwnable.kr memcpy writeup">
+    <meta name="twitter:description" content="Play this challenge at pwnable.kr: https://pwnable.kr/play.php
+Instructions Are you tired of hacking?, take some rest here. Just help me out with my small …">
+    <meta property="twitter:domain" content="http://localhost:1313/posts/pwnable.kr-memcpy-writeup/">
+    <meta property="twitter:url" content="http://localhost:1313/posts/pwnable.kr-memcpy-writeup/">
+    <meta name="twitter:image" content="http://localhost:1313/images/avatar.jpg">
+
+    
+    <link rel="canonical" href="http://localhost:1313/posts/pwnable.kr-memcpy-writeup/">
+
+    
+    <link rel="stylesheet" type="text/css" href="/css/normalize.min.css" media="print">
+
+    
+    <link rel="stylesheet" type="text/css" href="/css/main.min.css">
+
+    
+    <link id="dark-theme" rel="stylesheet" href="/css/dark.min.css">
+
+    
+    <script src="/js/bundle.min.a036ebe92c17ea3f0c07761c2135b82bec6f37c8efb7f49ddad1f28c22fc4769.js" integrity="sha256-oDbr6SwX6j8MB3YcITW4K&#43;xvN8jvt/Sd2tHyjCL8R2k="></script>
+
+    
+    
+</head>
+<body>
+        <script>
+            
+            setThemeByUserPref();
+        </script><header class="header">
+    <nav class="header-nav">
+
+        
+        <div class="avatar">
+            <a href="http://localhost:1313/">
+                <img src='/images/avatar.jpg' alt="avatar">
+            </a>
+        </div>
+        
+
+        <div class="nav-title">
+            <a class="nav-brand" href="http://localhost:1313/">pwnyz</a>
+        </div>
+
+        <div class="nav-links">
+            
+            <div class="nav-link">
+                <a href="http://localhost:1313/" aria-label="" ><span data-feather='home'></span> Home </a>
+            </div>
+            
+            <div class="nav-link">
+                <a href="http://localhost:1313/posts/" aria-label="" ><span data-feather='book'></span> Posts </a>
+            </div>
+            
+
+            <span class="nav-icons-divider"></span>
+            <div class="nav-link dark-theme-toggle">
+                <span class="sr-only dark-theme-toggle-screen-reader-target">theme</span>
+                <a aria-hidden="true" role="switch">
+                    <span class="theme-toggle-icon" data-feather="moon"></span>
+                </a>
+            </div>
+
+            <div class="nav-link" id="hamburger-menu-toggle">
+                <span class="sr-only hamburger-menu-toggle-screen-reader-target">menu</span>
+                <a aria-checked="false" aria-labelledby="hamburger-menu-toggle" id="hamburger-menu-toggle-target" role="switch">
+                    <span data-feather="menu"></span>
+                </a>
+            </div>
+
+            
+            <ul class="nav-hamburger-list visibility-hidden">
+                
+                <li class="nav-item">
+                    <a href="http://localhost:1313/" ><span data-feather='home'></span> Home </a>
+                </li>
+                
+                <li class="nav-item">
+                    <a href="http://localhost:1313/posts/" ><span data-feather='book'></span> Posts </a>
+                </li>
+                
+                <li class="nav-item dark-theme-toggle">
+                    <span class="sr-only dark-theme-toggle-screen-reader-target">theme</span>
+                    <a role="switch">
+                        <span class="theme-toggle-icon" data-feather="moon"></span>
+                    </a>
+                </li>
+            </ul>
+
+        </div>
+    </nav>
+</header>
+<main id="content">
+    <div class="post container">
+    <div class="post-header-section">
+        <h1>pwnable.kr memcpy writeup</h1>
+
+        
+
+        
+	
+	
+	
+	
+        
+
+	
+
+	
+
+	
+          <small role="doc-subtitle"></small>
+	
+
+	
+          <p class="post-date">
+              
+
+              13 October 2025
+
+              
+          </p>
+	
+
+        <ul class="post-tags">
+          
+           
+             <li class="post-tag"><a href="http://localhost:1313/tags/pwnable.kr">pwnable.kr</a></li>
+           
+         
+           
+             <li class="post-tag"><a href="http://localhost:1313/tags/ctf">ctf</a></li>
+           
+         
+           
+             <li class="post-tag"><a href="http://localhost:1313/tags/pwn">pwn</a></li>
+           
+         
+        </ul>
+    </div>
+
+    <div class="post-content">
+        <p>Play this challenge at pwnable.kr: <a href="https://pwnable.kr/play.php">https://pwnable.kr/play.php</a></p>
+<p><img src="img/main.png" alt="Main"></p>
+<h1 id="instructions">Instructions</h1>
+<blockquote>
+<p>Are you tired of hacking?, take some rest here.
+Just help me out with my small experiment regarding memcpy performance.
+after that, flag is yours.</p>
+<p>ssh <a href="mailto:memcpy@pwnable.kr">memcpy@pwnable.kr</a> -p2222 (pw:guest)</p>
+</blockquote>
+<h1 id="provided-files">Provided Files</h1>
+<h2 id="readme">readme</h2>
+<pre tabindex="0"><code>the compiled binary of &#34;memcpy.c&#34; source code (with real flag) will be executed under memcpy_pwn privilege if you connect to port 9022.
+execute the binary by connecting to daemon(nc 0 9022).
+
+nc 0 2000 if service is down
+</code></pre><h2 id="dockerfile">Dockerfile</h2>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-Dockerfile" data-lang="Dockerfile"><span style="display:flex;"><span><span style="color:#66d9ef">FROM</span><span style="color:#e6db74"> ubuntu:16.04</span><span style="color:#960050;background-color:#1e0010">
+</span></span></span><span style="display:flex;"><span><span style="color:#960050;background-color:#1e0010">
+</span></span></span><span style="display:flex;"><span><span style="color:#960050;background-color:#1e0010"></span><span style="color:#66d9ef">RUN</span> dpkg --add-architecture i386 <span style="color:#f92672">&amp;&amp;</span> <span style="color:#ae81ff">\
+</span></span></span><span style="display:flex;"><span><span style="color:#ae81ff"></span>    apt update <span style="color:#f92672">&amp;&amp;</span> <span style="color:#ae81ff">\
+</span></span></span><span style="display:flex;"><span><span style="color:#ae81ff"></span>    apt install -y gcc-multilib libc6:i386 lib32stdc++6 lib32z1 gdb file net-tools<span style="color:#960050;background-color:#1e0010">
+</span></span></span><span style="display:flex;"><span><span style="color:#960050;background-color:#1e0010">
+</span></span></span><span style="display:flex;"><span><span style="color:#960050;background-color:#1e0010"></span><span style="color:#66d9ef">RUN</span> apt-get install -y perl<span style="color:#960050;background-color:#1e0010">
+</span></span></span><span style="display:flex;"><span><span style="color:#960050;background-color:#1e0010"></span><span style="color:#66d9ef">RUN</span> curl -qsL <span style="color:#e6db74">&#39;https://install.pwndbg.re&#39;</span> | sh -s -- -t pwndbg-gdb<span style="color:#960050;background-color:#1e0010">
+</span></span></span><span style="display:flex;"><span><span style="color:#960050;background-color:#1e0010">
+</span></span></span><span style="display:flex;"><span><span style="color:#960050;background-color:#1e0010"></span><span style="color:#66d9ef">RUN</span> useradd -u <span style="color:#ae81ff">1089</span> -m memcpy_pwn<span style="color:#960050;background-color:#1e0010">
+</span></span></span><span style="display:flex;"><span><span style="color:#960050;background-color:#1e0010">
+</span></span></span><span style="display:flex;"><span><span style="color:#960050;background-color:#1e0010"></span><span style="color:#66d9ef">COPY</span> memcpy.c /home/memcpy_pwn/memcpy.c<span style="color:#960050;background-color:#1e0010">
+</span></span></span><span style="display:flex;"><span><span style="color:#960050;background-color:#1e0010"></span><span style="color:#66d9ef">COPY</span> super.pl /home/memcpy_pwn/super.pl<span style="color:#960050;background-color:#1e0010">
+</span></span></span><span style="display:flex;"><span><span style="color:#960050;background-color:#1e0010">
+</span></span></span><span style="display:flex;"><span><span style="color:#960050;background-color:#1e0010"></span><span style="color:#66d9ef">RUN</span> chown root:memcpy_pwn /home/memcpy_pwn/memcpy.c /home/memcpy_pwn/super.pl<span style="color:#960050;background-color:#1e0010">
+</span></span></span><span style="display:flex;"><span><span style="color:#960050;background-color:#1e0010"></span><span style="color:#66d9ef">WORKDIR</span><span style="color:#e6db74"> /home/memcpy_pwn</span><span style="color:#960050;background-color:#1e0010">
+</span></span></span><span style="display:flex;"><span><span style="color:#960050;background-color:#1e0010"></span><span style="color:#66d9ef">RUN</span> gcc -o memcpy memcpy.c -m32 -lm<span style="color:#960050;background-color:#1e0010">
+</span></span></span><span style="display:flex;"><span><span style="color:#960050;background-color:#1e0010"></span><span style="color:#66d9ef">RUN</span> chown root:memcpy_pwn /home/memcpy_pwn/memcpy<span style="color:#960050;background-color:#1e0010">
+</span></span></span><span style="display:flex;"><span><span style="color:#960050;background-color:#1e0010"></span><span style="color:#66d9ef">RUN</span> chmod <span style="color:#ae81ff">550</span> /home/memcpy_pwn/memcpy<span style="color:#960050;background-color:#1e0010">
+</span></span></span><span style="display:flex;"><span><span style="color:#960050;background-color:#1e0010"></span><span style="color:#66d9ef">RUN</span> chmod <span style="color:#ae81ff">550</span> /home/memcpy_pwn/super.pl<span style="color:#960050;background-color:#1e0010">
+</span></span></span><span style="display:flex;"><span><span style="color:#960050;background-color:#1e0010">
+</span></span></span><span style="display:flex;"><span><span style="color:#960050;background-color:#1e0010">
+</span></span></span><span style="display:flex;"><span><span style="color:#960050;background-color:#1e0010"></span><span style="color:#66d9ef">USER</span><span style="color:#e6db74"> memcpy_pwn</span><span style="color:#960050;background-color:#1e0010">
+</span></span></span><span style="display:flex;"><span><span style="color:#960050;background-color:#1e0010"></span><span style="color:#66d9ef">WORKDIR</span><span style="color:#e6db74"> /home</span><span style="color:#960050;background-color:#1e0010">
+</span></span></span><span style="display:flex;"><span><span style="color:#960050;background-color:#1e0010"></span><span style="color:#66d9ef">CMD</span> [<span style="color:#e6db74">&#34;perl&#34;</span>, <span style="color:#e6db74">&#34;/home/memcpy_pwn/super.pl&#34;</span>]<span style="color:#960050;background-color:#1e0010">
+</span></span></span></code></pre></div><h2 id="superpl">super.pl</h2>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-perl" data-lang="perl"><span style="display:flex;"><span><span style="color:#75715e">#!/usr/bin/perl</span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">use</span> Socket;
+</span></span><span style="display:flex;"><span>$port <span style="color:#f92672">=</span> <span style="color:#ae81ff">9022</span>;
+</span></span><span style="display:flex;"><span>@exec <span style="color:#f92672">=</span> (<span style="color:#e6db74">&#34;/home/memcpy_pwn/memcpy&#34;</span>);
+</span></span><span style="display:flex;"><span>socket(SERVER, PF_INET, SOCK_STREAM, <span style="color:#ae81ff">6</span>);
+</span></span><span style="display:flex;"><span>setsockopt(SERVER, SOL_SOCKET, SO_REUSEADDR, pack(<span style="color:#e6db74">&#34;l&#34;</span>, <span style="color:#ae81ff">1</span>));
+</span></span><span style="display:flex;"><span>bind(SERVER, sockaddr_in($port, INADDR_ANY));
+</span></span><span style="display:flex;"><span>listen(SERVER,SOMAXCONN);
+</span></span><span style="display:flex;"><span>$SIG{<span style="color:#e6db74">&#34;CHLD&#34;</span>} <span style="color:#f92672">=</span> <span style="color:#e6db74">&#34;IGNORE&#34;</span>;
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">while</span>($addr <span style="color:#f92672">=</span> accept CLIENT, SERVER){
+</span></span><span style="display:flex;"><span>    $| <span style="color:#f92672">=</span> <span style="color:#ae81ff">1</span>;
+</span></span><span style="display:flex;"><span>    ($port, $packed_ip) <span style="color:#f92672">=</span> sockaddr_in($addr); 
+</span></span><span style="display:flex;"><span>    $datestring <span style="color:#f92672">=</span> localtime();
+</span></span><span style="display:flex;"><span>    $ip <span style="color:#f92672">=</span> inet_ntoa($packed_ip);
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">print</span> <span style="color:#e6db74">&#34;$ip: $port connected($datestring)\n&#34;</span>;
+</span></span><span style="display:flex;"><span>    fork <span style="color:#f92672">||</span> <span style="color:#66d9ef">do</span> {
+</span></span><span style="display:flex;"><span>        $| <span style="color:#f92672">=</span> <span style="color:#ae81ff">1</span>;
+</span></span><span style="display:flex;"><span>        close SERVER;
+</span></span><span style="display:flex;"><span>        open STDIN,  <span style="color:#e6db74">&#34;&lt;&amp;CLIENT&#34;</span>;
+</span></span><span style="display:flex;"><span>        open STDOUT, <span style="color:#e6db74">&#34;&gt;&amp;CLIENT&#34;</span>;
+</span></span><span style="display:flex;"><span>        open STDERR, <span style="color:#e6db74">&#34;&gt;&amp;CLIENT&#34;</span>;
+</span></span><span style="display:flex;"><span>        close CLIENT;
+</span></span><span style="display:flex;"><span>        exec @exec;
+</span></span><span style="display:flex;"><span>        exit <span style="color:#ae81ff">0</span>;
+</span></span><span style="display:flex;"><span>    };
+</span></span><span style="display:flex;"><span>    close CLIENT;
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>close SERVER;
+</span></span></code></pre></div><h2 id="memcpyc">memcpy.c</h2>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-C" data-lang="C"><span style="display:flex;"><span><span style="color:#75715e">// gcc -o memcpy memcpy.c -m32 -lm
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span><span style="color:#75715e">#include</span> <span style="color:#75715e">&lt;stdio.h&gt;</span><span style="color:#75715e">
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e">#include</span> <span style="color:#75715e">&lt;string.h&gt;</span><span style="color:#75715e">
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e">#include</span> <span style="color:#75715e">&lt;stdlib.h&gt;</span><span style="color:#75715e">
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e">#include</span> <span style="color:#75715e">&lt;signal.h&gt;</span><span style="color:#75715e">
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e">#include</span> <span style="color:#75715e">&lt;unistd.h&gt;</span><span style="color:#75715e">
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e">#include</span> <span style="color:#75715e">&lt;sys/mman.h&gt;</span><span style="color:#75715e">
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e">#include</span> <span style="color:#75715e">&lt;math.h&gt;</span><span style="color:#75715e">
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">unsigned</span> <span style="color:#66d9ef">long</span> <span style="color:#66d9ef">long</span> <span style="color:#a6e22e">rdtsc</span>(){
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">asm</span>(<span style="color:#e6db74">&#34;rdtsc&#34;</span>);
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">char</span><span style="color:#f92672">*</span> <span style="color:#a6e22e">slow_memcpy</span>(<span style="color:#66d9ef">char</span><span style="color:#f92672">*</span> dest, <span style="color:#66d9ef">const</span> <span style="color:#66d9ef">char</span><span style="color:#f92672">*</span> src, <span style="color:#66d9ef">size_t</span> len){
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">int</span> i;
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">for</span> (i<span style="color:#f92672">=</span><span style="color:#ae81ff">0</span>; i<span style="color:#f92672">&lt;</span>len; i<span style="color:#f92672">++</span>) {
+</span></span><span style="display:flex;"><span>                dest[i] <span style="color:#f92672">=</span> src[i];
+</span></span><span style="display:flex;"><span>        }
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">return</span> dest;
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">char</span><span style="color:#f92672">*</span> <span style="color:#a6e22e">fast_memcpy</span>(<span style="color:#66d9ef">char</span><span style="color:#f92672">*</span> dest, <span style="color:#66d9ef">const</span> <span style="color:#66d9ef">char</span><span style="color:#f92672">*</span> src, <span style="color:#66d9ef">size_t</span> len){
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">size_t</span> i;
+</span></span><span style="display:flex;"><span>        <span style="color:#75715e">// 64-byte block fast copy
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>        <span style="color:#66d9ef">if</span>(len <span style="color:#f92672">&gt;=</span> <span style="color:#ae81ff">64</span>){
+</span></span><span style="display:flex;"><span>                i <span style="color:#f92672">=</span> len <span style="color:#f92672">/</span> <span style="color:#ae81ff">64</span>;
+</span></span><span style="display:flex;"><span>                len <span style="color:#f92672">&amp;=</span> (<span style="color:#ae81ff">64</span><span style="color:#f92672">-</span><span style="color:#ae81ff">1</span>);
+</span></span><span style="display:flex;"><span>                <span style="color:#66d9ef">while</span>(i<span style="color:#f92672">--</span> <span style="color:#f92672">&gt;</span> <span style="color:#ae81ff">0</span>){
+</span></span><span style="display:flex;"><span>                        __asm__ <span style="color:#a6e22e">__volatile__</span> (
+</span></span><span style="display:flex;"><span>                        <span style="color:#e6db74">&#34;movdqa (%0), %%xmm0</span><span style="color:#ae81ff">\n</span><span style="color:#e6db74">&#34;</span>
+</span></span><span style="display:flex;"><span>                        <span style="color:#e6db74">&#34;movdqa 16(%0), %%xmm1</span><span style="color:#ae81ff">\n</span><span style="color:#e6db74">&#34;</span>
+</span></span><span style="display:flex;"><span>                        <span style="color:#e6db74">&#34;movdqa 32(%0), %%xmm2</span><span style="color:#ae81ff">\n</span><span style="color:#e6db74">&#34;</span>
+</span></span><span style="display:flex;"><span>                        <span style="color:#e6db74">&#34;movdqa 48(%0), %%xmm3</span><span style="color:#ae81ff">\n</span><span style="color:#e6db74">&#34;</span>
+</span></span><span style="display:flex;"><span>                        <span style="color:#e6db74">&#34;movntps %%xmm0, (%1)</span><span style="color:#ae81ff">\n</span><span style="color:#e6db74">&#34;</span>
+</span></span><span style="display:flex;"><span>                        <span style="color:#e6db74">&#34;movntps %%xmm1, 16(%1)</span><span style="color:#ae81ff">\n</span><span style="color:#e6db74">&#34;</span>
+</span></span><span style="display:flex;"><span>                        <span style="color:#e6db74">&#34;movntps %%xmm2, 32(%1)</span><span style="color:#ae81ff">\n</span><span style="color:#e6db74">&#34;</span>
+</span></span><span style="display:flex;"><span>                        <span style="color:#e6db74">&#34;movntps %%xmm3, 48(%1)</span><span style="color:#ae81ff">\n</span><span style="color:#e6db74">&#34;</span>
+</span></span><span style="display:flex;"><span>                        <span style="color:#f92672">::</span><span style="color:#e6db74">&#34;r&#34;</span>(src),<span style="color:#e6db74">&#34;r&#34;</span>(dest)<span style="color:#f92672">:</span><span style="color:#e6db74">&#34;memory&#34;</span>);
+</span></span><span style="display:flex;"><span>                        dest <span style="color:#f92672">+=</span> <span style="color:#ae81ff">64</span>;
+</span></span><span style="display:flex;"><span>                        src <span style="color:#f92672">+=</span> <span style="color:#ae81ff">64</span>;
+</span></span><span style="display:flex;"><span>                }
+</span></span><span style="display:flex;"><span>        }
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>        <span style="color:#75715e">// byte-to-byte slow copy
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>        <span style="color:#66d9ef">if</span>(len) <span style="color:#a6e22e">slow_memcpy</span>(dest, src, len);
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">return</span> dest;
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">int</span> <span style="color:#a6e22e">main</span>(<span style="color:#66d9ef">void</span>){
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>        <span style="color:#a6e22e">setvbuf</span>(stdout, <span style="color:#ae81ff">0</span>, _IONBF, <span style="color:#ae81ff">0</span>);
+</span></span><span style="display:flex;"><span>        <span style="color:#a6e22e">setvbuf</span>(stdin, <span style="color:#ae81ff">0</span>, _IOLBF, <span style="color:#ae81ff">0</span>);
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>        <span style="color:#a6e22e">printf</span>(<span style="color:#e6db74">&#34;Hey, I have a boring assignment for CS class.. :(</span><span style="color:#ae81ff">\n</span><span style="color:#e6db74">&#34;</span>);
+</span></span><span style="display:flex;"><span>        <span style="color:#a6e22e">printf</span>(<span style="color:#e6db74">&#34;The assignment is simple.</span><span style="color:#ae81ff">\n</span><span style="color:#e6db74">&#34;</span>);
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>        <span style="color:#a6e22e">printf</span>(<span style="color:#e6db74">&#34;-----------------------------------------------------</span><span style="color:#ae81ff">\n</span><span style="color:#e6db74">&#34;</span>);
+</span></span><span style="display:flex;"><span>        <span style="color:#a6e22e">printf</span>(<span style="color:#e6db74">&#34;- What is the best implementation of memcpy?        -</span><span style="color:#ae81ff">\n</span><span style="color:#e6db74">&#34;</span>);
+</span></span><span style="display:flex;"><span>        <span style="color:#a6e22e">printf</span>(<span style="color:#e6db74">&#34;- 1. implement your own slow/fast version of memcpy -</span><span style="color:#ae81ff">\n</span><span style="color:#e6db74">&#34;</span>);
+</span></span><span style="display:flex;"><span>        <span style="color:#a6e22e">printf</span>(<span style="color:#e6db74">&#34;- 2. compare them with various size of data         -</span><span style="color:#ae81ff">\n</span><span style="color:#e6db74">&#34;</span>);
+</span></span><span style="display:flex;"><span>        <span style="color:#a6e22e">printf</span>(<span style="color:#e6db74">&#34;- 3. conclude your experiment and submit report     -</span><span style="color:#ae81ff">\n</span><span style="color:#e6db74">&#34;</span>);
+</span></span><span style="display:flex;"><span>        <span style="color:#a6e22e">printf</span>(<span style="color:#e6db74">&#34;-----------------------------------------------------</span><span style="color:#ae81ff">\n</span><span style="color:#e6db74">&#34;</span>);
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>        <span style="color:#a6e22e">printf</span>(<span style="color:#e6db74">&#34;This time, just help me out with my experiment and get flag</span><span style="color:#ae81ff">\n</span><span style="color:#e6db74">&#34;</span>);
+</span></span><span style="display:flex;"><span>        <span style="color:#a6e22e">printf</span>(<span style="color:#e6db74">&#34;No fancy hacking, I promise :D</span><span style="color:#ae81ff">\n</span><span style="color:#e6db74">&#34;</span>);
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">unsigned</span> <span style="color:#66d9ef">long</span> <span style="color:#66d9ef">long</span> t1, t2;
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">int</span> e;
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">char</span><span style="color:#f92672">*</span> src;
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">char</span><span style="color:#f92672">*</span> dest;
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">unsigned</span> <span style="color:#66d9ef">int</span> low, high;
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">unsigned</span> <span style="color:#66d9ef">int</span> size;
+</span></span><span style="display:flex;"><span>        <span style="color:#75715e">// allocate memory
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>        <span style="color:#66d9ef">char</span><span style="color:#f92672">*</span> cache1 <span style="color:#f92672">=</span> <span style="color:#a6e22e">mmap</span>(<span style="color:#ae81ff">0</span>, <span style="color:#ae81ff">0x4000</span>, <span style="color:#ae81ff">7</span>, MAP_PRIVATE<span style="color:#f92672">|</span>MAP_ANONYMOUS, <span style="color:#f92672">-</span><span style="color:#ae81ff">1</span>, <span style="color:#ae81ff">0</span>);
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">char</span><span style="color:#f92672">*</span> cache2 <span style="color:#f92672">=</span> <span style="color:#a6e22e">mmap</span>(<span style="color:#ae81ff">0</span>, <span style="color:#ae81ff">0x4000</span>, <span style="color:#ae81ff">7</span>, MAP_PRIVATE<span style="color:#f92672">|</span>MAP_ANONYMOUS, <span style="color:#f92672">-</span><span style="color:#ae81ff">1</span>, <span style="color:#ae81ff">0</span>);
+</span></span><span style="display:flex;"><span>        src <span style="color:#f92672">=</span> <span style="color:#a6e22e">mmap</span>(<span style="color:#ae81ff">0</span>, <span style="color:#ae81ff">0x2000</span>, <span style="color:#ae81ff">7</span>, MAP_PRIVATE<span style="color:#f92672">|</span>MAP_ANONYMOUS, <span style="color:#f92672">-</span><span style="color:#ae81ff">1</span>, <span style="color:#ae81ff">0</span>);
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">size_t</span> sizes[<span style="color:#ae81ff">10</span>];
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">int</span> i<span style="color:#f92672">=</span><span style="color:#ae81ff">0</span>;
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>        <span style="color:#75715e">// setup experiment parameters
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>        <span style="color:#66d9ef">for</span>(e<span style="color:#f92672">=</span><span style="color:#ae81ff">4</span>; e<span style="color:#f92672">&lt;</span><span style="color:#ae81ff">14</span>; e<span style="color:#f92672">++</span>){    <span style="color:#75715e">// 2^13 = 8K
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>                low <span style="color:#f92672">=</span> <span style="color:#a6e22e">pow</span>(<span style="color:#ae81ff">2</span>,e<span style="color:#f92672">-</span><span style="color:#ae81ff">1</span>);
+</span></span><span style="display:flex;"><span>                high <span style="color:#f92672">=</span> <span style="color:#a6e22e">pow</span>(<span style="color:#ae81ff">2</span>,e);
+</span></span><span style="display:flex;"><span>                <span style="color:#a6e22e">printf</span>(<span style="color:#e6db74">&#34;specify the memcpy amount between %d ~ %d : &#34;</span>, low, high);
+</span></span><span style="display:flex;"><span>                <span style="color:#a6e22e">scanf</span>(<span style="color:#e6db74">&#34;%d&#34;</span>, <span style="color:#f92672">&amp;</span>size);
+</span></span><span style="display:flex;"><span>                <span style="color:#66d9ef">if</span>( size <span style="color:#f92672">&lt;</span> low <span style="color:#f92672">||</span> size <span style="color:#f92672">&gt;</span> high ){
+</span></span><span style="display:flex;"><span>                        <span style="color:#a6e22e">printf</span>(<span style="color:#e6db74">&#34;don&#39;t mess with the experiment.</span><span style="color:#ae81ff">\n</span><span style="color:#e6db74">&#34;</span>);
+</span></span><span style="display:flex;"><span>                        <span style="color:#a6e22e">exit</span>(<span style="color:#ae81ff">0</span>);
+</span></span><span style="display:flex;"><span>                }
+</span></span><span style="display:flex;"><span>                sizes[i<span style="color:#f92672">++</span>] <span style="color:#f92672">=</span> size;
+</span></span><span style="display:flex;"><span>        }
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>        <span style="color:#a6e22e">sleep</span>(<span style="color:#ae81ff">1</span>);
+</span></span><span style="display:flex;"><span>        <span style="color:#a6e22e">printf</span>(<span style="color:#e6db74">&#34;ok, lets run the experiment with your configuration</span><span style="color:#ae81ff">\n</span><span style="color:#e6db74">&#34;</span>);
+</span></span><span style="display:flex;"><span>        <span style="color:#a6e22e">sleep</span>(<span style="color:#ae81ff">1</span>);
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>        <span style="color:#75715e">// run experiment
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>        <span style="color:#66d9ef">for</span>(i<span style="color:#f92672">=</span><span style="color:#ae81ff">0</span>; i<span style="color:#f92672">&lt;</span><span style="color:#ae81ff">10</span>; i<span style="color:#f92672">++</span>){
+</span></span><span style="display:flex;"><span>                size <span style="color:#f92672">=</span> sizes[i];
+</span></span><span style="display:flex;"><span>                <span style="color:#a6e22e">printf</span>(<span style="color:#e6db74">&#34;experiment %d : memcpy with buffer size %d</span><span style="color:#ae81ff">\n</span><span style="color:#e6db74">&#34;</span>, i<span style="color:#f92672">+</span><span style="color:#ae81ff">1</span>, size);
+</span></span><span style="display:flex;"><span>                dest <span style="color:#f92672">=</span> <span style="color:#a6e22e">malloc</span>( size );
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>                <span style="color:#a6e22e">memcpy</span>(cache1, cache2, <span style="color:#ae81ff">0x4000</span>);         <span style="color:#75715e">// to eliminate cache effect
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>                t1 <span style="color:#f92672">=</span> <span style="color:#a6e22e">rdtsc</span>();
+</span></span><span style="display:flex;"><span>                <span style="color:#a6e22e">slow_memcpy</span>(dest, src, size);           <span style="color:#75715e">// byte-to-byte memcpy
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>                t2 <span style="color:#f92672">=</span> <span style="color:#a6e22e">rdtsc</span>();
+</span></span><span style="display:flex;"><span>                <span style="color:#a6e22e">printf</span>(<span style="color:#e6db74">&#34;ellapsed CPU cycles for slow_memcpy : %llu</span><span style="color:#ae81ff">\n</span><span style="color:#e6db74">&#34;</span>, t2<span style="color:#f92672">-</span>t1);
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>                <span style="color:#a6e22e">memcpy</span>(cache1, cache2, <span style="color:#ae81ff">0x4000</span>);         <span style="color:#75715e">// to eliminate cache effect
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>                t1 <span style="color:#f92672">=</span> <span style="color:#a6e22e">rdtsc</span>();
+</span></span><span style="display:flex;"><span>                <span style="color:#a6e22e">fast_memcpy</span>(dest, src, size);           <span style="color:#75715e">// block-to-block memcpy
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>                t2 <span style="color:#f92672">=</span> <span style="color:#a6e22e">rdtsc</span>();
+</span></span><span style="display:flex;"><span>                <span style="color:#a6e22e">printf</span>(<span style="color:#e6db74">&#34;ellapsed CPU cycles for fast_memcpy : %llu</span><span style="color:#ae81ff">\n</span><span style="color:#e6db74">&#34;</span>, t2<span style="color:#f92672">-</span>t1);
+</span></span><span style="display:flex;"><span>                <span style="color:#a6e22e">printf</span>(<span style="color:#e6db74">&#34;</span><span style="color:#ae81ff">\n</span><span style="color:#e6db74">&#34;</span>);
+</span></span><span style="display:flex;"><span>        }
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>        <span style="color:#a6e22e">printf</span>(<span style="color:#e6db74">&#34;thanks for helping my experiment!</span><span style="color:#ae81ff">\n</span><span style="color:#e6db74">&#34;</span>);
+</span></span><span style="display:flex;"><span>        <span style="color:#a6e22e">printf</span>(<span style="color:#e6db74">&#34;flag : [erased here. get it from server]</span><span style="color:#ae81ff">\n</span><span style="color:#e6db74">&#34;</span>);
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">return</span> <span style="color:#ae81ff">0</span>;
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><h1 id="walkthrough">Walkthrough</h1>
+<h2 id="lay-of-the-land">Lay of the land</h2>
+<p>Connecting to <code>nc 0 9022</code> and supplying the smallest memcpy amounts results in the &ldquo;experiment&rdquo; hanging on experiment 5:</p>
+<p><img src="img/initial-nc-run.png" alt="initial-nc-run"></p>
+<h2 id="why-are-we-hanging-at-experiment-5">Why are we hanging at experiment 5?</h2>
+<p>To try and figure out why we are hanging at experiment 5, lets looking at the source code for any clues.</p>
+<p>Review of memcpy.c shows that the program is running assembly instructions &ldquo;<strong>movdqa</strong>&rdquo; (Move Double Quadword Aligned) and &ldquo;<strong>movntps</strong>&rdquo; (Move Non-Temporal Packed Single-Precision Floats), which are x86 SIMD (SSE) instructions used for moving data to or from XXM registers (128-bit wide registers).</p>
+<p>If you want to learn more abount Single Instruction, Multiple Data (SIMD) and Streaming SIMD Extensions (SIMD), you can start your rabithole here:</p>
+<p><a href="https://en.wikipedia.org/wiki/Streaming_SIMD_Extensions">https://en.wikipedia.org/wiki/Streaming_SIMD_Extensions</a>.</p>
+<p>TL;DR, they make moving data faster but you need to make sure memory is 16 byte aligned when moving to and from these special XXM registers (Otherwise it will segfault).</p>
+<p>i.e. In <code>movdqa (%0), %%xmm0\n</code>, <code>%0</code> must be a multiple of 16.</p>
+<p><code>%0 = 0x92d5c70</code> is :white_check_mark:, <code>%0 = 0x92d5c70</code> is :x: and segfaults.</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-C" data-lang="C"><span style="display:flex;"><span><span style="color:#66d9ef">char</span><span style="color:#f92672">*</span> <span style="color:#a6e22e">fast_memcpy</span>(<span style="color:#66d9ef">char</span><span style="color:#f92672">*</span> dest, <span style="color:#66d9ef">const</span> <span style="color:#66d9ef">char</span><span style="color:#f92672">*</span> src, <span style="color:#66d9ef">size_t</span> len){
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">size_t</span> i;
+</span></span><span style="display:flex;"><span>        <span style="color:#75715e">// 64-byte block fast copy
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>        <span style="color:#66d9ef">if</span>(len <span style="color:#f92672">&gt;=</span> <span style="color:#ae81ff">64</span>){
+</span></span><span style="display:flex;"><span>                i <span style="color:#f92672">=</span> len <span style="color:#f92672">/</span> <span style="color:#ae81ff">64</span>;
+</span></span><span style="display:flex;"><span>                len <span style="color:#f92672">&amp;=</span> (<span style="color:#ae81ff">64</span><span style="color:#f92672">-</span><span style="color:#ae81ff">1</span>);
+</span></span><span style="display:flex;"><span>                <span style="color:#66d9ef">while</span>(i<span style="color:#f92672">--</span> <span style="color:#f92672">&gt;</span> <span style="color:#ae81ff">0</span>){
+</span></span><span style="display:flex;"><span>                        __asm__ <span style="color:#a6e22e">__volatile__</span> (
+</span></span><span style="display:flex;"><span>                        <span style="color:#e6db74">&#34;movdqa (%0), %%xmm0</span><span style="color:#ae81ff">\n</span><span style="color:#e6db74">&#34;</span>
+</span></span><span style="display:flex;"><span>                        <span style="color:#e6db74">&#34;movdqa 16(%0), %%xmm1</span><span style="color:#ae81ff">\n</span><span style="color:#e6db74">&#34;</span>
+</span></span><span style="display:flex;"><span>                        <span style="color:#e6db74">&#34;movdqa 32(%0), %%xmm2</span><span style="color:#ae81ff">\n</span><span style="color:#e6db74">&#34;</span>
+</span></span><span style="display:flex;"><span>                        <span style="color:#e6db74">&#34;movdqa 48(%0), %%xmm3</span><span style="color:#ae81ff">\n</span><span style="color:#e6db74">&#34;</span>
+</span></span><span style="display:flex;"><span>                        <span style="color:#e6db74">&#34;movntps %%xmm0, (%1)</span><span style="color:#ae81ff">\n</span><span style="color:#e6db74">&#34;</span>
+</span></span><span style="display:flex;"><span>                        <span style="color:#e6db74">&#34;movntps %%xmm1, 16(%1)</span><span style="color:#ae81ff">\n</span><span style="color:#e6db74">&#34;</span>
+</span></span><span style="display:flex;"><span>                        <span style="color:#e6db74">&#34;movntps %%xmm2, 32(%1)</span><span style="color:#ae81ff">\n</span><span style="color:#e6db74">&#34;</span>
+</span></span><span style="display:flex;"><span>                        <span style="color:#e6db74">&#34;movntps %%xmm3, 48(%1)</span><span style="color:#ae81ff">\n</span><span style="color:#e6db74">&#34;</span>
+</span></span><span style="display:flex;"><span>                        <span style="color:#f92672">::</span><span style="color:#e6db74">&#34;r&#34;</span>(src),<span style="color:#e6db74">&#34;r&#34;</span>(dest)<span style="color:#f92672">:</span><span style="color:#e6db74">&#34;memory&#34;</span>);
+</span></span><span style="display:flex;"><span>                        dest <span style="color:#f92672">+=</span> <span style="color:#ae81ff">64</span>;
+</span></span><span style="display:flex;"><span>                        src <span style="color:#f92672">+=</span> <span style="color:#ae81ff">64</span>;
+</span></span><span style="display:flex;"><span>                }
+</span></span><span style="display:flex;"><span>        }
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>        <span style="color:#75715e">// byte-to-byte slow copy
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>        <span style="color:#66d9ef">if</span>(len) <span style="color:#a6e22e">slow_memcpy</span>(dest, src, len);
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">return</span> dest;
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><p>(Also BTW, if you&rsquo;re not familiar with C inline assembly, that <code>::&quot;r&quot;(src),&quot;r&quot;(dest):&quot;memory&quot;</code> is defining the inputs and means the <code>src</code> pointer is <code>%0</code> and <code>dest</code> pointer is <code>%1</code>.)</p>
+<p>The data pointed to by <code>src</code> is being moved to the intemediary XMM registers <code>xmm0-3</code> in 64 byte chunks (16 bytes * 4) then moved into memory at <code>dest</code> in 64 byte chunks (16 bytes * 4).</p>
+<p><code>src</code> and <code>dest</code> pointers are initialised with <code>mmap()</code> and <code>malloc()</code> respecitvely (trace it back yourself), and may not necesarily be 16 byte aligned, which is required for <code>movdqa</code> and <code>movntps</code>.</p>
+<p>This may be why the &ldquo;experiment&rdquo; hangs at experiment 5..</p>
+<h2 id="confirming-our-suspicions">Confirming our suspicions</h2>
+<p>Let&rsquo;s confirm our suspicions by running gdb on the binary.</p>
+<p>We can run the binary in the same environment as the challenge server&rsquo;s environment by using the Dockerfile provided as part of this challenge. Let&rsquo;s spin up the Doceker container.</p>
+<p>Copy <code>Dockerfile</code>, <code>memcpy.c</code> and <code>super.pl</code> into a directory and build/run our container:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>┌──<span style="color:#f92672">(</span>kali㉿kali<span style="color:#f92672">)</span>-<span style="color:#f92672">[</span>~/pwnable.kr/memcpy<span style="color:#f92672">]</span>
+</span></span><span style="display:flex;"><span>└─$ ls
+</span></span><span style="display:flex;"><span>Dockerfile  memcpy.c  super.pl
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>┌──<span style="color:#f92672">(</span>kali㉿kali<span style="color:#f92672">)</span>-<span style="color:#f92672">[</span>~/pwnable.kr/memcpy<span style="color:#f92672">]</span>
+</span></span><span style="display:flex;"><span>└─$ sudo docker build -t memcpy .   
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>....
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>┌──<span style="color:#f92672">(</span>kali㉿kali<span style="color:#f92672">)</span>-<span style="color:#f92672">[</span>~/pwnable.kr/memcpy<span style="color:#f92672">]</span>
+</span></span><span style="display:flex;"><span>└─$ sudo docker run -it memcpy /bin/bash
+</span></span></code></pre></div><p>You should now have the binary available to test:</p>
+<p><img src="img/docker-init.png" alt="Our binay in the Docker container"></p>
+<p>Disassembling the <code>fast_memcpy</code> function shows us the <code>movdqa</code> and <code>movntps</code> as expected. Importantly, <code>%0</code> (the <code>src</code> pointer) is register <code>%eax</code> and <code>%1</code> (the <code>dest</code> pointer) is register <code>%edx</code>.</p>
+<p><img src="img/disass-fast-memcpy.png" alt="Disassembled fast_memcpy"></p>
+<p>Let&rsquo;s set a breakpoint at the first <code>movdqa</code> instruction and see whether the pointers in registers <code>%eax</code> and <code>%edx</code> are 16 byte memory aligned.</p>
+<p><img src="img/exp4regs.png" alt="Experiment 4 eax and edx registers"></p>
+<p>Ok, so at the begining of experiment 4 (which is the first time the <code>movdqa</code> and <code>movntps</code> instructions are executed), <code>%eax</code> and %edx are 16 byte memory aligned (the hex value ends in 0). So experiment 4 should run without segfaulting and we should make it to experiment 5. Lets continue..</p>
+<p><img src="img/exp5regs.png" alt="Experiment 5 eax and edx registers"></p>
+<p>We can see <code>%edx</code> is NOT 16 byte aligned! We are missing alignment by 8 bytes. Continuing will result in a segfault.</p>
+<p><img src="img/segfault.png" alt="Experiment 5 Segfaults"></p>
+<h2 id="can-we-memory-align-edx">Can we memory align %edx?</h2>
+<p>We know that <code>%edx</code> is the <code>dest</code> pointer, which is re-initialised by <code>malloc()</code> for every new &ldquo;experiment&rdquo;.</p>
+<p><code>malloc()</code> allocated memory from the heap, and although not guaranteed, typically allocated memory in contiguous regions. i.e. If you do:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-C" data-lang="C"><span style="display:flex;"><span>a <span style="color:#f92672">=</span> <span style="color:#a6e22e">malloc</span>(<span style="color:#ae81ff">16</span>);
+</span></span><span style="display:flex;"><span>b <span style="color:#f92672">=</span> <span style="color:#a6e22e">malloc</span>(<span style="color:#ae81ff">16</span>);
+</span></span></code></pre></div><p>you <em>might</em> get:</p>
+<pre tabindex="0"><code>[a-metadata][a data][b-metadata][b data]
+</code></pre><p>In our case, we have control of the size of memory allocated by malloc for each experiment (the amount of memory we &ldquo;experiment&rdquo; doing <code>slow_memcpy</code> and <code>fast_memcpy</code> on).</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-C" data-lang="C"><span style="display:flex;"><span><span style="color:#75715e">// run experiment
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>    <span style="color:#66d9ef">for</span>(i<span style="color:#f92672">=</span><span style="color:#ae81ff">0</span>; i<span style="color:#f92672">&lt;</span><span style="color:#ae81ff">10</span>; i<span style="color:#f92672">++</span>){
+</span></span><span style="display:flex;"><span>            size <span style="color:#f92672">=</span> sizes[i];
+</span></span><span style="display:flex;"><span>            <span style="color:#a6e22e">printf</span>(<span style="color:#e6db74">&#34;experiment %d : memcpy with buffer size %d</span><span style="color:#ae81ff">\n</span><span style="color:#e6db74">&#34;</span>, i<span style="color:#f92672">+</span><span style="color:#ae81ff">1</span>, size);
+</span></span><span style="display:flex;"><span>            dest <span style="color:#f92672">=</span> <span style="color:#a6e22e">malloc</span>( size );
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>            <span style="color:#a6e22e">memcpy</span>(cache1, cache2, <span style="color:#ae81ff">0x4000</span>);         <span style="color:#75715e">// to eliminate cache effect
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>            t1 <span style="color:#f92672">=</span> <span style="color:#a6e22e">rdtsc</span>();
+</span></span><span style="display:flex;"><span>            <span style="color:#a6e22e">slow_memcpy</span>(dest, src, size);           <span style="color:#75715e">// byte-to-byte memcpy
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>            t2 <span style="color:#f92672">=</span> <span style="color:#a6e22e">rdtsc</span>();
+</span></span><span style="display:flex;"><span>            <span style="color:#a6e22e">printf</span>(<span style="color:#e6db74">&#34;ellapsed CPU cycles for slow_memcpy : %llu</span><span style="color:#ae81ff">\n</span><span style="color:#e6db74">&#34;</span>, t2<span style="color:#f92672">-</span>t1);
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>            <span style="color:#a6e22e">memcpy</span>(cache1, cache2, <span style="color:#ae81ff">0x4000</span>);         <span style="color:#75715e">// to eliminate cache effect
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>            t1 <span style="color:#f92672">=</span> <span style="color:#a6e22e">rdtsc</span>();
+</span></span><span style="display:flex;"><span>            <span style="color:#a6e22e">fast_memcpy</span>(dest, src, size);           <span style="color:#75715e">// block-to-block memcpy
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>            t2 <span style="color:#f92672">=</span> <span style="color:#a6e22e">rdtsc</span>();
+</span></span><span style="display:flex;"><span>            <span style="color:#a6e22e">printf</span>(<span style="color:#e6db74">&#34;ellapsed CPU cycles for fast_memcpy : %llu</span><span style="color:#ae81ff">\n</span><span style="color:#e6db74">&#34;</span>, t2<span style="color:#f92672">-</span>t1);
+</span></span><span style="display:flex;"><span>            <span style="color:#a6e22e">printf</span>(<span style="color:#e6db74">&#34;</span><span style="color:#ae81ff">\n</span><span style="color:#e6db74">&#34;</span>);
+</span></span><span style="display:flex;"><span>    }
+</span></span></code></pre></div><p>So for any current experiment, we may be able to adjust the <code>dest</code> pointer address by adjusting the <em>previous</em> experiments <code>malloc()</code> size.</p>
+<p>Let&rsquo;s test out our theory. We found during our gdb testing that the <code>dest</code> pointer for experiment 5 was 8 bytes misaligned. So let&rsquo;s add 8 to experiment 4&rsquo;s test size.</p>
+<p>The inputs for the experiment now become:</p>
+<pre tabindex="0"><code>specify the memcpy amount between 8 ~ 16 : 8
+specify the memcpy amount between 16 ~ 32 : 16
+specify the memcpy amount between 32 ~ 64 : 32
+specify the memcpy amount between 64 ~ 128 : 72     (which is 64+8)
+specify the memcpy amount between 128 ~ 256 : 128
+specify the memcpy amount between 256 ~ 512 : 256
+specify the memcpy amount between 512 ~ 1024 : 512
+specify the memcpy amount between 1024 ~ 2048 : 1024
+specify the memcpy amount between 2048 ~ 4096 : 2048
+specify the memcpy amount between 4096 ~ 8192 : 4096
+</code></pre><p><img src="img/exp5success.png" alt="Experiment 5 succeeds!"></p>
+<p>Nice. Experiment 5&rsquo;s <code>%edx</code> is now 16 byte aligned and we make it to experiment 6 without segfaulting.</p>
+<h2 id="solution">Solution</h2>
+<p>Continue this process to find the appropriate experiment sizes for experiment 5,6,7,8 and 9. We find the solution is:</p>
+<pre tabindex="0"><code>specify the memcpy amount between 8 ~ 16 : 8
+specify the memcpy amount between 16 ~ 32 : 16
+specify the memcpy amount between 32 ~ 64 : 32
+specify the memcpy amount between 64 ~ 128 : 72
+specify the memcpy amount between 128 ~ 256 : 135
+specify the memcpy amount between 256 ~ 512 : 263
+specify the memcpy amount between 512 ~ 1024 : 519
+specify the memcpy amount between 1024 ~ 2048 : 1031
+specify the memcpy amount between 2048 ~ 4096 : 2055
+specify the memcpy amount between 4096 ~ 8192 : 4096
+</code></pre><p><img src="img/solution.png" alt="Solution"></p>
+
+        
+    </div>
+
+    <div class="prev-next">
+        
+    </div>
+
+    
+    
+        <svg id="btt-button" class="arrow-logo" xmlns="http://www.w3.org/2000/svg" height="1em" viewBox="0 0 384 512" onclick="scrollToTop()" title="Go to top">
+    
+    <path d="M177 159.7l136 136c9.4 9.4 9.4 24.6 0 33.9l-22.6 22.6c-9.4 9.4-24.6 9.4-33.9 0L160 255.9l-96.4 96.4c-9.4 9.4-24.6 9.4-33.9 0L7 329.7c-9.4-9.4-9.4-24.6 0-33.9l136-136c9.4-9.5 24.6-9.5 34-.1z"/>
+</svg>
+<script>
+    let backToTopButton = document.getElementById("btt-button");
+
+    window.onscroll = function() {
+        scrollFunction()
+    };
+
+    function scrollFunction() {
+        if (document.body.scrollTop > 20 || document.documentElement.scrollTop > 20) {
+            backToTopButton.style.display = "block";
+        } else {
+            backToTopButton.style.display = "none";
+        }
+    }
+
+    function scrollToTop() {
+        window.scrollTo(0, 0);
+    }
+</script>
+
+    
+    
+</div>
+
+<aside class="post-toc">
+    <nav id="toc">
+        <nav id="TableOfContents">
+  <ul>
+    <li><a href="#instructions">Instructions</a></li>
+    <li><a href="#provided-files">Provided Files</a>
+      <ul>
+        <li><a href="#readme">readme</a></li>
+        <li><a href="#dockerfile">Dockerfile</a></li>
+        <li><a href="#superpl">super.pl</a></li>
+        <li><a href="#memcpyc">memcpy.c</a></li>
+      </ul>
+    </li>
+    <li><a href="#walkthrough">Walkthrough</a>
+      <ul>
+        <li><a href="#lay-of-the-land">Lay of the land</a></li>
+        <li><a href="#why-are-we-hanging-at-experiment-5">Why are we hanging at experiment 5?</a></li>
+        <li><a href="#confirming-our-suspicions">Confirming our suspicions</a></li>
+        <li><a href="#can-we-memory-align-edx">Can we memory align %edx?</a></li>
+        <li><a href="#solution">Solution</a></li>
+      </ul>
+    </li>
+  </ul>
+</nav>
+    </nav>
+</aside>
+
+
+
+    
+
+        </main><footer class="footer">
+    
+    
+
+    
+
+    
+
+    
+
+    <span>
+        Made with &#10084;&#65039; using <a target="_blank" href="https://github.com/gokarna-theme/gokarna-hugo">Gokarna</a>
+    </span>
+</footer>
+</body>
+</html>

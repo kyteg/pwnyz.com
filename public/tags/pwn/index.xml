@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Pwn on pwnyz</title>
+    <link>http://localhost:1313/tags/pwn/</link>
+    <description>Recent content in Pwn on pwnyz</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en-us</language>
+    <lastBuildDate>Mon, 13 Oct 2025 05:39:49 +0530</lastBuildDate>
+    <atom:link href="http://localhost:1313/tags/pwn/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>pwnable.kr memcpy writeup</title>
+      <link>http://localhost:1313/posts/pwnable.kr-memcpy-writeup/</link>
+      <pubDate>Mon, 13 Oct 2025 05:39:49 +0530</pubDate>
+      <guid>http://localhost:1313/posts/pwnable.kr-memcpy-writeup/</guid>
+      <description>Play this challenge at pwnable.kr: https://pwnable.kr/play.php&#xA;Instructions Are you tired of hacking?, take some rest here. Just help me out with my small experiment regarding memcpy performance. after that, flag is yours.&#xA;ssh memcpy@pwnable.kr -p2222 (pw:guest)&#xA;Provided Files readme the compiled binary of &amp;#34;memcpy.c&amp;#34; source code (with real flag) will be executed under memcpy_pwn privilege if you connect to port 9022. execute the binary by connecting to daemon(nc 0 9022). nc 0 2000 if service is down Dockerfile FROM ubuntu:16.</description>
+    </item>
+  </channel>
+</rss>
