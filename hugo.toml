@@ -11,6 +11,7 @@ theme = 'gokarna'
     showBackToTopButton = true
     showPostsOnHomePage = "recent"
     enableEmoji = true
+    favicon = "favicon.ico"
 
 
 [menu]
