@@ -32,3 +32,7 @@ theme = 'gokarna'
     startLevel = 1
     endLevel = 3
     ordered = false
+
+[caches]
+  [caches.images]
+    dir = ':cacheDir/images'
