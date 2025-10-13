@@ -3,6 +3,7 @@ languageCode = 'en-us'
 title = 'pwnyz'
 pygmentsStyle = "monokai"
 theme = 'gokarna'
+enableEmoji = true
 
 [params]
     avatarURL = "/images/avatar.jpg"
@@ -10,7 +11,6 @@ theme = 'gokarna'
     numberPostsOnHomePage = 4
     showBackToTopButton = true
     showPostsOnHomePage = "recent"
-    enableEmoji = true
     favicon = "favicon.ico"
 
 
