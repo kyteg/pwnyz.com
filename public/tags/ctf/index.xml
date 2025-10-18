@@ -6,8 +6,15 @@
     <description>Recent content in Ctf on pwnyz</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
-    <lastBuildDate>Mon, 13 Oct 2025 05:39:49 +0530</lastBuildDate>
+    <lastBuildDate>Sat, 18 Oct 2025 05:39:49 +0530</lastBuildDate>
     <atom:link href="http://localhost:1313/tags/ctf/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>pwnable.kr horcruxes - writeup</title>
+      <link>http://localhost:1313/posts/pwnable.kr-horcruxes-writeup/</link>
+      <pubDate>Sat, 18 Oct 2025 05:39:49 +0530</pubDate>
+      <guid>http://localhost:1313/posts/pwnable.kr-horcruxes-writeup/</guid>
+      <description>Play this challenge at pwnable.kr: https://pwnable.kr/play.php&#xA;Instructions Voldemort concealed his splitted soul inside 7 horcruxes. Find all horcruxes, and ROP it! author: jiwon choi&#xA;ssh horcruxes@pwnable.kr -p2222 (pw:guest)&#xA;Provided Files readme connect to port 9032 (nc 0 9032). the &amp;#39;horcruxes&amp;#39; binary will be executed under horcruxes_pwn privilege.&#xD;rop it to read the flag. Walkthrough Lay of the land Upon SSH-ing to the challenge and running the binary, it looks like we are able to provide some input to the program.</description>
+    </item>
     <item>
       <title>pwnable.kr memcpy - writeup</title>
       <link>http://localhost:1313/posts/pwnable.kr-memcpy-writeup/</link>

