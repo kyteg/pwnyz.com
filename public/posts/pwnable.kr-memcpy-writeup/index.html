@@ -18,21 +18,21 @@
     
 
     
-    <title>pwnable.kr memcpy writeup</title>
+    <title>pwnable.kr memcpy - writeup</title>
     <meta name="description" content="Play this challenge at pwnable.kr: https://pwnable.kr/play.php
 Instructions Are you tired of hacking?, take some rest here. Just help me out with my small …">
     <meta name="keywords" content='pwnable.kr, ctf, pwn'>
 
     <meta property="og:url" content="http://localhost:1313/posts/pwnable.kr-memcpy-writeup/">
     <meta property="og:type" content="website">
-    <meta property="og:title" content="pwnable.kr memcpy writeup">
+    <meta property="og:title" content="pwnable.kr memcpy - writeup">
     <meta property="og:description" content="Play this challenge at pwnable.kr: https://pwnable.kr/play.php
 Instructions Are you tired of hacking?, take some rest here. Just help me out with my small …">
     <meta property="og:image" content="http://localhost:1313/images/avatar.jpg">
     <meta property="og:image:secure_url" content="http://localhost:1313/images/avatar.jpg">
 
     <meta name="twitter:card" content="summary_large_image">
-    <meta name="twitter:title" content="pwnable.kr memcpy writeup">
+    <meta name="twitter:title" content="pwnable.kr memcpy - writeup">
     <meta name="twitter:description" content="Play this challenge at pwnable.kr: https://pwnable.kr/play.php
 Instructions Are you tired of hacking?, take some rest here. Just help me out with my small …">
     <meta property="twitter:domain" content="http://localhost:1313/posts/pwnable.kr-memcpy-writeup/">
@@ -127,7 +127,7 @@ Instructions Are you tired of hacking?, take some rest here. Just help me out wi
 <main id="content">
     <div class="post container">
     <div class="post-header-section">
-        <h1>pwnable.kr memcpy writeup</h1>
+        <h1>pwnable.kr memcpy - writeup</h1>
 
         
 
@@ -377,7 +377,7 @@ nc 0 2000 if service is down
 <p><a href="https://en.wikipedia.org/wiki/Streaming_SIMD_Extensions">https://en.wikipedia.org/wiki/Streaming_SIMD_Extensions</a>.</p>
 <p>TL;DR, they make moving data faster but you need to make sure memory is 16 byte aligned when moving to and from these special XXM registers (Otherwise it will segfault).</p>
 <p>i.e. In <code>movdqa (%0), %%xmm0\n</code>, <code>%0</code> must be a multiple of 16.</p>
-<p><code>%0 = 0x92d5c70</code> is :white_check_mark:, <code>%0 = 0x92d5c70</code> is :x: and segfaults.</p>
+<p><code>%0 = 0x92d5c70</code> is &#x2705;, <code>%0 = 0x92d5c70</code> is &#x274c; and segfaults.</p>
 <div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-C" data-lang="C"><span style="display:flex;"><span><span style="color:#66d9ef">char</span><span style="color:#f92672">*</span> <span style="color:#a6e22e">fast_memcpy</span>(<span style="color:#66d9ef">char</span><span style="color:#f92672">*</span> dest, <span style="color:#66d9ef">const</span> <span style="color:#66d9ef">char</span><span style="color:#f92672">*</span> src, <span style="color:#66d9ef">size_t</span> len){
 </span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">size_t</span> i;
 </span></span><span style="display:flex;"><span>        <span style="color:#75715e">// 64-byte block fast copy

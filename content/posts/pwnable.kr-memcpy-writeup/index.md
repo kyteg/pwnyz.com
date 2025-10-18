@@ -226,7 +226,7 @@ To try and figure out why we are hanging at experiment 5, lets looking at the so
 
 Review of memcpy.c shows that the program is running assembly instructions "**movdqa**" (Move Double Quadword Aligned) and "**movntps**" (Move Non-Temporal Packed Single-Precision Floats), which are x86 SIMD (SSE) instructions used for moving data to or from XXM registers (128-bit wide registers). 
 
-If you want to learn more abount Single Instruction, Multiple Data (SIMD) and Streaming SIMD Extensions (SIMD), you can start your rabithole here: 
+If you want to learn more abount Single Instruction, Multiple Data (SIMD) and Streaming SIMD Extensions (SSE), you can start your rabithole here: 
 
 https://en.wikipedia.org/wiki/Streaming_SIMD_Extensions. 
 
