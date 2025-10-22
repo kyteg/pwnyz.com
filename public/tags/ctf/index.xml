@@ -6,8 +6,15 @@
     <description>Recent content in Ctf on pwnyz</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
-    <lastBuildDate>Sat, 18 Oct 2025 05:39:49 +0530</lastBuildDate>
+    <lastBuildDate>Wed, 22 Oct 2025 05:39:49 +0530</lastBuildDate>
     <atom:link href="http://localhost:1313/tags/ctf/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>pwnable.kr simplelogin - writeup</title>
+      <link>http://localhost:1313/posts/pwnable.kr-simplelogin-writeup/</link>
+      <pubDate>Wed, 22 Oct 2025 05:39:49 +0530</pubDate>
+      <guid>http://localhost:1313/posts/pwnable.kr-simplelogin-writeup/</guid>
+      <description>Play this challenge at pwnable.kr: https://pwnable.kr/play.php&#xA;Instructions Can you get authentication from this server?&#xA;ssh simplelogin@pwnable.kr -p2222 (pw: guest)&#xA;Provided Files readme once you connect to port 9003, the &amp;#34;simplelogin&amp;#34; will be executed under simplelogin_pwn privilege.&#xD;make connection to challenge (nc 0 9003) then get the flag. Lay of the land Running the binary, we see it asks for input, then prints what seems to be a MD5 hash.&#xA;Disassembly of the binary Disassembling the binary, we see the following for main:</description>
+    </item>
     <item>
       <title>pwnable.kr horcruxes - writeup</title>
       <link>http://localhost:1313/posts/pwnable.kr-horcruxes-writeup/</link>

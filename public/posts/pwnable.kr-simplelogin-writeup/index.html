@@ -1,0 +1,312 @@
+<!DOCTYPE html>
+<html lang="en"><head><script src="/livereload.js?mindelay=10&amp;v=2&amp;port=1313&amp;path=livereload" data-no-instant defer></script>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <style>
+        :root {
+            --accent-color: #FF4D4D;
+            --font-size: 1.1rem;
+        }
+    </style>
+
+    
+    
+    
+    
+    
+    
+
+    
+    <title>pwnable.kr simplelogin - writeup</title>
+    <meta name="description" content="Play this challenge at pwnable.kr: https://pwnable.kr/play.php
+Instructions Can you get authentication from this server?
+ssh simplelogin@pwnable.kr -p2222 (pw: …">
+    <meta name="keywords" content='pwnable.kr, ctf, pwn'>
+
+    <meta property="og:url" content="http://localhost:1313/posts/pwnable.kr-simplelogin-writeup/">
+    <meta property="og:type" content="website">
+    <meta property="og:title" content="pwnable.kr simplelogin - writeup">
+    <meta property="og:description" content="Play this challenge at pwnable.kr: https://pwnable.kr/play.php
+Instructions Can you get authentication from this server?
+ssh simplelogin@pwnable.kr -p2222 (pw: …">
+    <meta property="og:image" content="http://localhost:1313/images/avatar.jpg">
+    <meta property="og:image:secure_url" content="http://localhost:1313/images/avatar.jpg">
+
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="pwnable.kr simplelogin - writeup">
+    <meta name="twitter:description" content="Play this challenge at pwnable.kr: https://pwnable.kr/play.php
+Instructions Can you get authentication from this server?
+ssh simplelogin@pwnable.kr -p2222 (pw: …">
+    <meta property="twitter:domain" content="http://localhost:1313/posts/pwnable.kr-simplelogin-writeup/">
+    <meta property="twitter:url" content="http://localhost:1313/posts/pwnable.kr-simplelogin-writeup/">
+    <meta name="twitter:image" content="http://localhost:1313/images/avatar.jpg">
+
+    
+    <link rel="canonical" href="http://localhost:1313/posts/pwnable.kr-simplelogin-writeup/">
+
+    
+    <link rel="stylesheet" type="text/css" href="/css/normalize.min.css" media="print">
+
+    
+    <link rel="stylesheet" type="text/css" href="/css/main.min.css">
+
+    
+    <link id="dark-theme" rel="stylesheet" href="/css/dark.min.css">
+
+    
+    <script src="/js/bundle.min.a036ebe92c17ea3f0c07761c2135b82bec6f37c8efb7f49ddad1f28c22fc4769.js" integrity="sha256-oDbr6SwX6j8MB3YcITW4K&#43;xvN8jvt/Sd2tHyjCL8R2k="></script>
+
+    
+    
+</head>
+<body>
+        <script>
+            
+            setThemeByUserPref();
+        </script><header class="header">
+    <nav class="header-nav">
+
+        
+        <div class="avatar">
+            <a href="http://localhost:1313/">
+                <img src='/images/avatar.jpg' alt="avatar">
+            </a>
+        </div>
+        
+
+        <div class="nav-title">
+            <a class="nav-brand" href="http://localhost:1313/">pwnyz</a>
+        </div>
+
+        <div class="nav-links">
+            
+            <div class="nav-link">
+                <a href="http://localhost:1313/" aria-label="" ><span data-feather='home'></span> Home </a>
+            </div>
+            
+            <div class="nav-link">
+                <a href="http://localhost:1313/posts/" aria-label="" ><span data-feather='book'></span> Posts </a>
+            </div>
+            
+
+            <span class="nav-icons-divider"></span>
+            <div class="nav-link dark-theme-toggle">
+                <span class="sr-only dark-theme-toggle-screen-reader-target">theme</span>
+                <a aria-hidden="true" role="switch">
+                    <span class="theme-toggle-icon" data-feather="moon"></span>
+                </a>
+            </div>
+
+            <div class="nav-link" id="hamburger-menu-toggle">
+                <span class="sr-only hamburger-menu-toggle-screen-reader-target">menu</span>
+                <a aria-checked="false" aria-labelledby="hamburger-menu-toggle" id="hamburger-menu-toggle-target" role="switch">
+                    <span data-feather="menu"></span>
+                </a>
+            </div>
+
+            
+            <ul class="nav-hamburger-list visibility-hidden">
+                
+                <li class="nav-item">
+                    <a href="http://localhost:1313/" ><span data-feather='home'></span> Home </a>
+                </li>
+                
+                <li class="nav-item">
+                    <a href="http://localhost:1313/posts/" ><span data-feather='book'></span> Posts </a>
+                </li>
+                
+                <li class="nav-item dark-theme-toggle">
+                    <span class="sr-only dark-theme-toggle-screen-reader-target">theme</span>
+                    <a role="switch">
+                        <span class="theme-toggle-icon" data-feather="moon"></span>
+                    </a>
+                </li>
+            </ul>
+
+        </div>
+    </nav>
+</header>
+<main id="content">
+    <div class="post container">
+    <div class="post-header-section">
+        <h1>pwnable.kr simplelogin - writeup</h1>
+
+        
+
+        
+	
+	
+	
+	
+        
+
+	
+
+	
+
+	
+          <small role="doc-subtitle"></small>
+	
+
+	
+          <p class="post-date">
+              
+
+              22 October 2025
+
+              
+          </p>
+	
+
+        <ul class="post-tags">
+          
+           
+             <li class="post-tag"><a href="http://localhost:1313/tags/pwnable.kr">pwnable.kr</a></li>
+           
+         
+           
+             <li class="post-tag"><a href="http://localhost:1313/tags/ctf">ctf</a></li>
+           
+         
+           
+             <li class="post-tag"><a href="http://localhost:1313/tags/pwn">pwn</a></li>
+           
+         
+        </ul>
+    </div>
+
+    <div class="post-content">
+        <p>Play this challenge at pwnable.kr: <a href="https://pwnable.kr/play.php">https://pwnable.kr/play.php</a></p>
+<p><img src="img/main.png" alt="Main"></p>
+<h1 id="instructions">Instructions</h1>
+<blockquote>
+<p>Can you get authentication from this server?</p>
+<p>ssh <a href="mailto:simplelogin@pwnable.kr">simplelogin@pwnable.kr</a> -p2222 (pw: guest)</p>
+</blockquote>
+<h1 id="provided-files">Provided Files</h1>
+<h2 id="readme">readme</h2>
+<pre tabindex="0"><code>once you connect to port 9003, the &#34;simplelogin&#34; will be executed under simplelogin_pwn privilege.
+make connection to challenge (nc 0 9003) then get the flag.
+</code></pre><h1 id="lay-of-the-land">Lay of the land</h1>
+<p>Running the binary, we see it asks for input, then prints what seems to be a MD5 hash.</p>
+<p><img src="img/initial-test.png" alt="Initial test"></p>
+<h1 id="disassembly-of-the-binary">Disassembly of the binary</h1>
+<p>Disassembling the binary, we see the following for main:</p>
+<p><img src="img/dissas-main.png" alt="Disassembled main"></p>
+<p>The binary takes user input, base64 decodes the input and runs <code>auth()</code> on the input. If <code>auth()</code> returns <code>1</code>, it runs <code>correct()</code>.</p>
+<p><img src="img/disass-auth.png" alt="Disassembled auth"></p>
+<p><img src="img/disass-correct.png" alt="Disassembled correct"></p>
+<p>An interesting thing about <code>auth()</code> - Notice line 18 of <code>main()</code> checks that the length of <code>input</code>, <code>i &lt; 0xd</code> (<code>i</code> is length of base64 decoded input, which is stored in global variable <code>input</code>). This means the size of <code>input</code> can be upto 0xc (12) bytes long. However, in <code>auth()</code>, the contents of <code>input</code> are being <code>memcpy</code>&lsquo;ed into a buffer of only 8 bytes long, on line 10. By providing an input &gt;8 bytes but &lt;13 bytes, we can overwrite upto 4 bytes on the stack. Lets see what gets overwritten on the stack&hellip;</p>
+<h1 id="overwriting-the-stack-to-control-ebp-and-eip">Overwriting the stack to control $EBP and $EIP</h1>
+<p>To see what happens when we provide input &gt;8 bytes but &lt;13 bytes (pre-base64 encoding), lets use gdb.</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-Bash" data-lang="Bash"><span style="display:flex;"><span>┌──<span style="color:#f92672">(</span>kali㉿kali<span style="color:#f92672">)</span>-<span style="color:#f92672">[</span>~/pwnable.kr/simpleLogin<span style="color:#f92672">]</span>
+</span></span><span style="display:flex;"><span>└─$ python3
+</span></span><span style="display:flex;"><span>Python 3.13.5 <span style="color:#f92672">(</span>main, Jun <span style="color:#ae81ff">25</span> 2025, 18:55:22<span style="color:#f92672">)</span> <span style="color:#f92672">[</span>GCC 14.2.0<span style="color:#f92672">]</span> on linux
+</span></span><span style="display:flex;"><span>Type <span style="color:#e6db74">&#34;help&#34;</span>, <span style="color:#e6db74">&#34;copyright&#34;</span>, <span style="color:#e6db74">&#34;credits&#34;</span> or <span style="color:#e6db74">&#34;license&#34;</span> <span style="color:#66d9ef">for</span> more information.
+</span></span><span style="display:flex;"><span>&gt;&gt;&gt; import base64
+</span></span><span style="display:flex;"><span>&gt;&gt;&gt; payload <span style="color:#f92672">=</span> b<span style="color:#e6db74">&#34;aaaaaaaaaaaa&#34;</span>
+</span></span><span style="display:flex;"><span>&gt;&gt;&gt; b64 <span style="color:#f92672">=</span> base64.b64encode<span style="color:#f92672">(</span>payload<span style="color:#f92672">)</span>
+</span></span><span style="display:flex;"><span>&gt;&gt;&gt; b64
+</span></span><span style="display:flex;"><span>b<span style="color:#e6db74">&#39;YWFhYWFhYWFhYWFh&#39;</span>
+</span></span></code></pre></div><p><img src="img/gdb-aaaa.png" alt="gdb output for initial test input"></p>
+<p>Interesting. So it looks like the <code>EBP</code> register is being overwritten. The <code>EBP</code> register is used by functions to point to the function&rsquo;s local frame. Our 8 byte buffer into which our 12 byte input is being copied into must be at the top of the stack right after the &lsquo;saved <code>EBP</code>&rsquo; of the <code>auth()</code> function. Once <code>auth()</code> function ends, it loads into the <code>EBP</code> register the &lsquo;saved <code>EBP</code>&rsquo; that we can overwrite on the stack!</p>
+<p><img src="img/ebp-explanation.png" alt="ebp explanation"></p>
+<p>If we can control <code>EBP</code>, we can control <code>EIP</code> (saved function return address) by setting <code>EBP</code> to the address of where our desired <code>EIP</code> is stored in memory, minus 4 bytes.</p>
+<h1 id="plan">Plan</h1>
+<p>So here is our plan:</p>
+<p>We want <code>EIP</code> to end up as the memory address of the <code>system()</code> call on line 7 of <code>correct()</code> - <code>0x0804928b</code></p>
+<p><img src="img/gdb-disass-correct.png" alt="GDB disassembly of correct"></p>
+<p>We can place these bytes: <code>0x0804928b</code>, into memory by placing it onto our <code>input</code> variable - say, the first 4 bytes. (We use <code>input</code> since it is a global variable and memory location is fixed)</p>
+<p>We also need to overwrite the <code>EBP</code> register to point to the memory location of the variable <code>input</code> (where we store <code>0x0804928b</code>) minus 4 bytes. The location of <code>input</code> is <code>0x811eb40</code> so <code>input-4</code> is <code>0x811eb3c</code></p>
+<p><img src="img/input-mem-location.png" alt="input variable memory location"></p>
+<p>Remember that to overwrite <code>EBP</code>, the address needs to be in positions 8-12 within our payload. Thus we need some padding bytes between <code>0x0804928b</code> and <code>0x811eb3c</code> in our final payload.</p>
+<h1 id="solution">Solution</h1>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-Bash" data-lang="Bash"><span style="display:flex;"><span>┌──<span style="color:#f92672">(</span>kali㉿kali<span style="color:#f92672">)</span>-<span style="color:#f92672">[</span>~/pwnable.kr/simpleLogin<span style="color:#f92672">]</span>
+</span></span><span style="display:flex;"><span>└─$ python3
+</span></span><span style="display:flex;"><span>Python 3.13.5 <span style="color:#f92672">(</span>main, Jun <span style="color:#ae81ff">25</span> 2025, 18:55:22<span style="color:#f92672">)</span> <span style="color:#f92672">[</span>GCC 14.2.0<span style="color:#f92672">]</span> on linux
+</span></span><span style="display:flex;"><span>Type <span style="color:#e6db74">&#34;help&#34;</span>, <span style="color:#e6db74">&#34;copyright&#34;</span>, <span style="color:#e6db74">&#34;credits&#34;</span> or <span style="color:#e6db74">&#34;license&#34;</span> <span style="color:#66d9ef">for</span> more information.
+</span></span><span style="display:flex;"><span>&gt;&gt;&gt; import base64
+</span></span><span style="display:flex;"><span>&gt;&gt;&gt; payload <span style="color:#f92672">=</span> b<span style="color:#e6db74">&#34;\x84\x92\x04\x08aaaa\x3c\xeb\x11\x08&#34;</span>
+</span></span><span style="display:flex;"><span>&gt;&gt;&gt; b64 <span style="color:#f92672">=</span> base64.b64encode<span style="color:#f92672">(</span>payload<span style="color:#f92672">)</span>
+</span></span><span style="display:flex;"><span>&gt;&gt;&gt; b64
+</span></span><span style="display:flex;"><span>b<span style="color:#e6db74">&#39;hJIECGFhYWE86xEI&#39;</span>
+</span></span></code></pre></div><p><img src="img/solution.png" alt="Solution"></p>
+
+        
+    </div>
+
+    <div class="prev-next">
+        
+    </div>
+
+    
+    
+        <svg id="btt-button" class="arrow-logo" xmlns="http://www.w3.org/2000/svg" height="1em" viewBox="0 0 384 512" onclick="scrollToTop()" title="Go to top">
+    
+    <path d="M177 159.7l136 136c9.4 9.4 9.4 24.6 0 33.9l-22.6 22.6c-9.4 9.4-24.6 9.4-33.9 0L160 255.9l-96.4 96.4c-9.4 9.4-24.6 9.4-33.9 0L7 329.7c-9.4-9.4-9.4-24.6 0-33.9l136-136c9.4-9.5 24.6-9.5 34-.1z"/>
+</svg>
+<script>
+    let backToTopButton = document.getElementById("btt-button");
+
+    window.onscroll = function() {
+        scrollFunction()
+    };
+
+    function scrollFunction() {
+        if (document.body.scrollTop > 20 || document.documentElement.scrollTop > 20) {
+            backToTopButton.style.display = "block";
+        } else {
+            backToTopButton.style.display = "none";
+        }
+    }
+
+    function scrollToTop() {
+        window.scrollTo(0, 0);
+    }
+</script>
+
+    
+    
+</div>
+
+<aside class="post-toc">
+    <nav id="toc">
+        <nav id="TableOfContents">
+  <ul>
+    <li><a href="#instructions">Instructions</a></li>
+    <li><a href="#provided-files">Provided Files</a>
+      <ul>
+        <li><a href="#readme">readme</a></li>
+      </ul>
+    </li>
+    <li><a href="#lay-of-the-land">Lay of the land</a></li>
+    <li><a href="#disassembly-of-the-binary">Disassembly of the binary</a></li>
+    <li><a href="#overwriting-the-stack-to-control-ebp-and-eip">Overwriting the stack to control $EBP and $EIP</a></li>
+    <li><a href="#plan">Plan</a></li>
+    <li><a href="#solution">Solution</a></li>
+  </ul>
+</nav>
+    </nav>
+</aside>
+
+
+
+    
+
+        </main><footer class="footer">
+    
+    
+
+    
+
+    
+
+    
+
+    <span>
+        Made with &#10084;&#65039; using <a target="_blank" href="https://github.com/gokarna-theme/gokarna-hugo">Gokarna</a>
+    </span>
+</footer>
+</body>
+</html>
